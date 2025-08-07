@@ -5,4 +5,4 @@ python3 main.py \
     -d 96 \
     -s 14 \
     -sp 0 \
-    -b -ia
+    -b -ia -bin

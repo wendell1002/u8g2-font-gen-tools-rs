@@ -9,11 +9,12 @@ parser.add_argument("-n", "--font_name", help = "输出字体名称")
 parser.add_argument("-p", "--font_path", help = "字体路径")
 parser.add_argument("-d", "--dpi", help = "字体分辨率")
 parser.add_argument("-s", "--size", help = "字体大小")
-parser.add_argument("-sp", "--space", help = "字体间距",default=0)
+parser.add_argument("-sp", "--space", help = "字体间距",default="0")
 parser.add_argument("-b", "--bdf", action='store_true', help = "生成bdf文件")
 parser.add_argument("-c", "--c_file", action='store_true', help = "生成C文件")
 parser.add_argument("-ia", "--ignore_ascii", action='store_true', help = "是否忽略ASCII输入")
 parser.add_argument("-fa", "--font_ascii", action='store_true', help = "是否包含ASCII")
+parser.add_argument("-bin", "--font_bin", action='store_true', help = "是否生成二进制字体文件")
 
 #确保win10终端颜色正常显示
 if os.name == "nt":
@@ -39,6 +40,8 @@ add_ASCII_flag = False
 bdfFlag = False
 # 生成C文件
 cFileFlag = False
+# 是否生成二进制字体文件
+fontBinFlag=False
 fontSPSize = 0
 
 args = parser.parse_args()
@@ -72,6 +75,9 @@ if (args.ignore_ascii != None):
 if (args.font_ascii != None):
     add_ASCII_flag = args.font_ascii
     print('\033[1;30;33m',"[INFO] 读取命令行参数,是否包含ASCII >\033[0m",add_ASCII_flag)    
+if (args.font_bin != None):
+    fontBinFlag = args.font_bin
+    print('\033[1;30;33m',"[INFO] 读取命令行参数,是否生成二进制字体文件 >\033[0m",fontBinFlag)    
 
 #如果命令行参数不完整，则提示用户手动输入
 if (args.input == None):
@@ -114,6 +120,12 @@ if (args.input == None or args.font_name == None or args.font_path == None or ar
     add_ASCII_flag_input = input("\033[1;30;33m[ASK] MAP字符映射文件是否包含ASCII? (Y/n) >\033[0m")
     if (add_ASCII_flag_input == "y" or add_ASCII_flag_input == "Y" or add_ASCII_flag_input == ""):
         add_ASCII_flag = True
+
+    add_ASCII_flag_input = input("\033[1;30;33m[ASK] 是否生成二进制字体文件? (Y/n) >\033[0m")
+    if (add_ASCII_flag_input == "y" or add_ASCII_flag_input == "Y" or add_ASCII_flag_input == ""):
+        fontBinFlag = True
+        args.c_file = True
+
 
 tftFontName = os.path.basename(ttfFontPath)
 tftFontNameReal = tftFontName.split('.')[0]
@@ -159,6 +171,7 @@ exeExtension = ".exe" if os.name == "nt" else ""
 bdfPath = "bdf/{0}_{1}.bdf".format(tftFontNameReal,fontSizePx)
 targetFontName = "{0}_{1}".format(targetFontName,fontSizePx)
 c_codePath = "code/{0}.c".format(targetFontName)
+fontBinPath = "fonts-bin/{0}/".format(targetFontName)
 #生成bdf字库
 if (bdfFlag):
     #生成bdf文件
@@ -171,5 +184,21 @@ if (cFileFlag):
     bdfconvCMD = "bdfconv"+exeExtension+" -v -b 0 -f 1 {0} -M {1} -n {2} -o {3} -p {4} -d {0}".format(bdfPath,mapPath,targetFontName,c_codePath,fontSPSize)
     print(">",bdfconvCMD)
     os.system(bdfconvCMD)
+if (fontBinFlag) :
+    #生成u8g2 rust 二进制字体文件，通过目标C语言字库文件生成 generate_fonts_file.exe
+    # generate_fonts_file.exe code/pht_16.c font_bin
+    import shutil
+    if os.path.exists(fontBinPath):
+        print("已经存在的文件夹",fontBinPath,",先删除")
+        shutil.rmtree(fontBinPath, ignore_errors=True)
+     
+    os.makedirs(fontBinPath)
+
+ 
+    genFontsFileCMD="generate_fonts_file.exe "+c_codePath+" "+fontBinPath
+    print(">",genFontsFileCMD)
+    os.system(genFontsFileCMD)
+
+
 #完成信息
 print('\033[1;37;42m',"[操作完成]",'\033[0m')

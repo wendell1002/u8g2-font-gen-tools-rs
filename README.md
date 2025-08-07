@@ -33,14 +33,15 @@ main.py适用于GPL3.0协议
 
 ## 第三方工具使用
 
-| 名称                     | 来源                                                  |
-|:----------------------:|:---------------------------------------------------:|
-| bdfconv                | <https://github.com/olikraus/u8g2>                  |
-| otf2bdf                | <http://sofia.nmsu.edu/~mleisher/Software/otf2bdf/> |
-| Alibaba-PuHuiTi-Medium | <https://ics.alibaba.com/project/Hn8mXx>            |
+| 名称                     | 来源                                                                         |
+|:----------------------:|:--------------------------------------------------------------------------:|
+| bdfconv                | <https://github.com/olikraus/u8g2>                                         |
+| otf2bdf                | <http://sofia.nmsu.edu/~mleisher/Software/otf2bdf/>                        |
+| Alibaba-PuHuiTi-Medium | <https://ics.alibaba.com/project/Hn8mXx>                                   |
+| Rust字体文件转换工具           | https://github.com/Finomnis/u8g2-fonts/tree/main/tools/generate_fonts_file |
 
 ## 演示图片
 
-![shell界面](shell.jpg)
+![shell界面](shell.png)
 ![生成字体](font_tga.jpg)
 ![实际lcd演示](hc32f460_lcd.jpg)
